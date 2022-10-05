@@ -182,8 +182,55 @@ app.get("/api/user",function(req,res){
   //  res.status(200).send({data:user});
     res.status(200).send({data:user});
   }
- res.status(400).send({data:"no user"});
+ res.status(200).send({data:"no user"});
   
+})
+
+
+//api for Register user data from database  
+app.post("/api/registeruser",async(req,res)=>{   
+  // res.set('Access-Control-Allow-Origin','*'); 
+ 
+ const { full_name,email,status,phone_no,password } = req.body;
+ 
+ // Validate if user exist in our database
+ const olduser = await modeluser.findOne({ email });
+
+   if (olduser) {
+     return res.send({data:"User Already Exist"});
+   }
+
+  var encryedpassword = await bcrypt.hash(password,10).catch(error => {
+    console.log("error: ",error);
+  });
+  // Create student in our database
+
+  console.log("data: ",req.body);
+   // Create student in our database
+   var mod = new modeluser({
+     full_name,
+     email,
+     status,
+     phone_no, // sanitize: convert email to lowercase
+     password: encryedpassword,
+   });  
+    
+   // mod.save(function(err,data){  
+   //     if(err){  
+   //         res.send({data:err});                
+   //     }  
+   //     else{        
+   //         res.send({data:"User has been Inserted..!!"});  
+   //     }  
+   // });  
+   mod.save()
+     .then(
+     user => {
+       res.status(200).send({data:user})
+     })
+     .catch(error => {
+       res.status(400).send({data:error})
+     })
 })
 
 
@@ -289,52 +336,5 @@ app.get("/api/user",function(req,res){
          });  
  }) 
  
- 
- 
- //api for Register user data from database  
- app.post("/api/registeruser",async(req,res)=>{   
-   res.set('Access-Control-Allow-Origin','*'); 
-  
-  const { full_name,email,status,phone_no,password } = req.body;
-  // Validate if user exist in our database
-  const olduser = await modeluser.findOne({ email });
-
-    if (olduser) {
-      return res.send({data:"User Already Exist"});
-    }
-
-   var encryedpassword = await bcrypt.hash(password,10);
-   // Create student in our database
-
-   console.log("data: ",req.body);
-    // Create student in our database
-    var mod = new modeluser({
-      full_name,
-      email,
-      status,
-      phone_no, // sanitize: convert email to lowercase
-      password: encryedpassword,
-    });  
-     
-    // mod.save(function(err,data){  
-    //     if(err){  
-    //         res.send({data:err});                
-    //     }  
-    //     else{        
-    //         res.send({data:"User has been Inserted..!!"});  
-    //     }  
-    // });  
-    mod.save()
-      .then(
-      user => {
-        res.status(200).send({data:user})
-      })
-      .catch(error => {
-        res.status(500).send({data:error})
-      })
- })
-
- 
-
   app.get('/', (req, res) => res.render('pages/index'))
   app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
