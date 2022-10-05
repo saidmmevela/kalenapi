@@ -293,7 +293,7 @@ app.get("/api/user",function(req,res){
  
  //api for Register user data from database  
  app.post("/api/registeruser",async(req,res)=>{   
-  // res.set('Access-Control-Allow-Origin','*'); 
+   res.set('Access-Control-Allow-Origin','*'); 
   
   const { full_name,email,status,phone_no,password } = req.body;
   // Validate if user exist in our database
