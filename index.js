@@ -134,6 +134,49 @@ var modelappointment = mongoose.model('appointment', appointmentSchema, 'appoint
   })
 
   //api for get users from database  
+app.post("/api/userbyrole",function(req,res){   
+  const {email}=req.body;
+  modeluser.find({email},{password:0},function(err,data){
+   //res.set('Access-Control-Allow-Origin','*');  
+             if(err){  
+                 res.send(err);  
+             }  
+             else if(data.length > 0){
+              console.log("status", data);
+              if(data[0].status == 'admin'){
+                modeluser.find({},{password:0},function(err,data){
+                  if(err){  
+                      res.send(err);  
+                  }  
+                  else if(data.length > 0){
+                  res.send({data});  
+                  }
+                  else{
+                    res.send({data:"no user"});
+                  } 
+                })
+              } else if(data[0].status == 'patient'){
+                modeluser.find({status:"doctor"},{password:0},function(err,data){
+                  if(err){  
+                    res.send(err);  
+                  }  
+                  else if(data.length > 0){
+                  res.send({data});  
+                  }
+                  else{
+                    res.send({data:"no user"});
+                  } 
+                })
+              }
+              // res.send({data});  
+             }
+             else{
+               res.send({data:"wrong email"});
+             } 
+         });  
+ })
+
+  //api for get users from database  
 app.get("/api/user",function(req,res){   
   modeluser.find({},{password:0},function(err,data){
  
@@ -263,22 +306,64 @@ app.post("/api/registeruser",async(req,res)=>{
   //api for doctor appointment  from database  
  app.post("/api/doctorappointment",function(req,res){  
   //res.set('Access-Control-Allow-Origin','*');  
-  const {doc_id}=req.body;
+  const {email}=req.body;
   console.log("data: ",req.body);
-  modelappointment.aggregate([{$lookup: {from:"users",localField:"pat_id",foreignField:"id",as:"userDetails"}},{$match:{doc_id}}],
-  // modelappointment.find({doc_id},  
- function(err,data) {  
-  if (err) {  
-  res.send({data:"error"});  
-  
-  } 
-  else if(data.length > 0){
-   res.send({data});  
-  }
-  else{
-    res.send({data:"no appointment"});
-  }
-  });  
+  modeluser.find({email},{password:0},function(err,data){
+    //res.set('Access-Control-Allow-Origin','*');  
+    if(err){  
+        res.send(err);  
+    }  
+    else if(data.length > 0){
+      if(data[0].status == 'admin'){
+        modelappointment.aggregate([{$lookup: {from:"users",localField:"pat_id",foreignField:"id",as:"userDetails"}}],
+          // modelappointment.find({doc_id},  
+        function(err,data) {  
+          if (err) {  
+          res.send({data:"error"});  
+          
+          } 
+          else if(data.length > 0){
+          res.send({data});  
+          }
+          else{
+            res.send({data:"no appointment"});
+          }
+          });  
+      }
+      else if(data[0].status == 'doctor'){
+        modelappointment.aggregate([{$lookup: {from:"users",localField:"pat_id",foreignField:"id",as:"userDetails"}},{$match:{doc_id:data[0]._id}}],
+          // modelappointment.find({doc_id},  
+        function(err,data) {  
+          if (err) {  
+          res.send({data:"error"});  
+          
+          } 
+          else if(data.length > 0){
+          res.send({data});  
+          }
+          else{
+            res.send({data:"no appointment"});
+          }
+          });  
+      }
+      else{
+        modelappointment.aggregate([{$lookup: {from:"users",localField:"doc_id",foreignField:"id",as:"userDetails"}},{$match:{pat_id:data[0]._id}}],
+          // modelappointment.find({doc_id},  
+        function(err,data) {  
+          if (err) {  
+          res.send({data:"error"});  
+          
+          } 
+          else if(data.length > 0){
+          res.send({data});  
+          }
+          else{
+            res.send({data:"no appointment"});
+          }
+          });  
+      }
+    }
+  })
  }) 
 
  //api for patient appointment  from database  
