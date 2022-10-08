@@ -270,6 +270,38 @@ app.get("/api/user",function(req,res){
              } 
          });  
  }) 
+
+   //api for get users from database  
+app.get("/api/getuser",function(req,res){   
+  const {email}=req.body;
+  modeluser.find({email},{password:0},function(err,data){
+ 
+   //res.set('Access-Control-Allow-Origin','*');  
+             if(err){  
+                 res.send(err);  
+             }  
+             else if(data.length > 0){
+              res.send({data});  
+             }
+             else{
+               res.send({data:"no user"});
+             } 
+         });  
+ })
+ 
+ //api for Update header from database  
+ app.post("/api/Updatedoctor",function(req,res){  
+  //res.set('Access-Control-Allow-Origin','*');
+  const { email, phone_no, full_name} =req.body;  
+   modelheader.update({email}, {$set:{phone_no,full_name} },   
+  function(err) {  
+   if (err) {  
+   res.send(err);  
+   return;  
+   }  
+   res.send({data:"details has been Updated..!!"});  
+   });  
+  })  
  
  //api for get appointment from database  
  app.get("/api/appointment",function(req,res){   
