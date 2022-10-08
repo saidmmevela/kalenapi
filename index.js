@@ -272,8 +272,9 @@ app.get("/api/user",function(req,res){
  }) 
 
    //api for get users from database  
-app.get("/api/getuser",function(req,res){   
+app.post("/api/getuser",function(req,res){   
   const {email}=req.body;
+  console.log("email: ", email);
   modeluser.find({email},{password:0},function(err,data){
  
    //res.set('Access-Control-Allow-Origin','*');  
