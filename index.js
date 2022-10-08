@@ -380,7 +380,7 @@ app.post("/api/registeruser",async(req,res)=>{
       }
       else if(data[0].status == 'doctor'){
         
-        modelappointment.aggregate([{$lookup: {from:"users",localField:"pat_id",foreignField:"email",as:"userDetails"}},{$match:{doc_id:data[0].id}}],
+        modelappointment.aggregate([{$lookup: {from:"users",localField:"pat_id",foreignField:"email",as:"userDetails"}},{$match:{doc_id:data[0].email}}],
           // modelappointment.find({doc_id},  
         function(err,data) {  
           if (err) {  
