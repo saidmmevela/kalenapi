@@ -176,6 +176,39 @@ app.post("/api/userbyrole",function(req,res){
          });  
  })
 
+//api for Delete user from database  deleteOne
+app.post("/api/Removeuser",function(req,res){   
+    console.log("data: ",req.body._id);
+    const {_id}=req.body;
+    modeluser.deleteOne({ _id }, function(err) { 
+    //res.set('Access-Control-Allow-Origin','*');  
+    
+              if(err){  
+                  res.send(err);  
+              }  
+              else{    
+                      res.send({data:"User has been Deleted..!!"});             
+                  }  
+          });  
+  }) 
+
+ //api for Delete Appointment from database  deleteOne
+ app.post("/api/Removeappointment",function(req,res){   
+  // model.remove({ _id: req.body.id }, function(err) {
+    console.log("data: ",req.body._id);
+    const {_id}=req.body;
+   modelappointment.deleteOne({ _id }, function(err) { 
+    //res.set('Access-Control-Allow-Origin','*');  
+    
+              if(err){  
+                  res.send(err);  
+              }  
+              else{    
+                     res.send({data:"Appointment has been Deleted..!!"});             
+                 }  
+          });  
+  }) 
+
  //api for set appointment from database  
 app.post("/api/setappointment",function(req,res){   
   const {email, pat, time, date,}=req.body;
@@ -416,29 +449,7 @@ app.post("/api/registeruser",async(req,res)=>{
   })
  }) 
 
- //api for patient appointment  from database  
- app.post("/api/patientappointment",function(req,res){  
-  //res.set('Access-Control-Allow-Origin','*');  
-  const {pat_id}=req.body;
-  console.log("data: ",req.body);
-  // modelappointment.find({pat_id}, 
-  modelappointment.aggregate([{$lookup: {from:"users",localField:"doc_id",foreignField:"id",as:"userDetails"}},{$match:{pat_id}}], 
- function(err,data) {  
-  if (err) {  
-  res.send({data:"error"});  
   
-  } 
-  else if(data.length > 0){
-   res.send({data});  
-  }
-  else{
-    res.send({data:"no appointment"});
-  }
-  });  
- }) 
-
-
- 
  app.post('/api/files/upload', upload.single("image"), fileWorker.uploadFile);
  
  app.get('/api/files/getall', fileWorker.listAllFiles);
