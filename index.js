@@ -289,8 +289,36 @@ app.post("/api/getuser",function(req,res){
              } 
          });  
  })
+
+  //api for Update appointment to reject from database  
+app.post("/api/rejectappointment",function(req,res){  
+  //res.set('Access-Control-Allow-Origin','*');
+  const { _id } =req.body;  
+    modelappointment.findOneAndUpdate({_id}, {$set:{response:"rejected"} },   
+  function(err) {  
+    if (err) {  
+    res.send(err);  
+    return;  
+    }  
+    res.send({data:"details has been Updated..!!"});  
+    });  
+  }) 
+
+  //api for Update appointment to accept from database  
+app.post("/api/acceptappointment",function(req,res){  
+  //res.set('Access-Control-Allow-Origin','*');
+  const { _id } =req.body;  
+    modelappointment.findOneAndUpdate({_id}, {$set:{response:"accepted"} },   
+  function(err) {  
+    if (err) {  
+    res.send(err);  
+    return;  
+    }  
+    res.send({data:"details has been Updated..!!"});  
+    });  
+  }) 
  
- //api for Update header from database  
+ //api for Update appointment from database  
  app.post("/api/Updatedoctor",function(req,res){  
   //res.set('Access-Control-Allow-Origin','*');
   const { email, phone_no, full_name} =req.body;  
