@@ -294,7 +294,7 @@ app.post("/api/getuser",function(req,res){
  app.post("/api/Updatedoctor",function(req,res){  
   //res.set('Access-Control-Allow-Origin','*');
   const { email, phone_no, full_name} =req.body;  
-   modelheader.update({email}, {$set:{phone_no,full_name} },   
+   modeluser.findOneAndUpdate({email}, {$set:{phone_no,full_name} },   
   function(err) {  
    if (err) {  
    res.send(err);  
