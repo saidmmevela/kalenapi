@@ -185,14 +185,14 @@ app.post("/api/setappointment",function(req,res){
           res.send(err);  
       }  
       else if(data.length > 0){
-         let doc_id = data[0]._id;
+         let doc_id = data[0].email;
          modeluser.find({email:pat},{password:0},function(err,data){
           //res.set('Access-Control-Allow-Origin','*');  
              if(err){
                  res.send(err);
              }  
              else if(data.length > 0){
-                let pat_id = data[0]._id;
+                let pat_id = data[0].email;
                 var mod = new modelappointment({
                   time,
                   date,
@@ -241,8 +241,9 @@ app.get("/api/user",function(req,res){
  //api for get appointment from database  
  app.get("/api/appointment",function(req,res){   
    modelappointment.find({},function(err,data){
- 
+  //  modelappointment.aggregate([{$lookup: {from:"users",localField:"doc_id",foreignField:"email",as:"doc"}},{$lookup: {from:"users",localField:"pat_id",foreignField:"email",as:"pat"}}],
    //res.set('Access-Control-Allow-Origin','*');  
+  //  function(err, data){
              if(err){  
                  res.send(err);  
              }  
@@ -251,8 +252,9 @@ app.get("/api/user",function(req,res){
              }
              else{
                res.send({data:"no appiontment"});
-             }  
-         });  
+             } 
+   })
+          
  }) 
  
  
@@ -361,7 +363,7 @@ app.post("/api/registeruser",async(req,res)=>{
     else if(data.length > 0){
       console.log("status: ",data[0].status);
       if(data[0].status == 'admin'){
-        modelappointment.aggregate([{$lookup: {from:"users",localField:"pat_id",foreignField:"id",as:"userDetails"}}],
+        modelappointment.aggregate([{$lookup: {from:"users",localField:"pat_id",foreignField:"email",as:"pat"}},{$lookup: {from:"users",localField:"doc_id",foreignField:"email",as:"doc"}}],
           // modelappointment.find({doc_id},  
         function(err,data) {  
           if (err) {  
@@ -378,7 +380,7 @@ app.post("/api/registeruser",async(req,res)=>{
       }
       else if(data[0].status == 'doctor'){
         
-        modelappointment.aggregate([{$lookup: {from:"users",localField:"pat_id",foreignField:"id",as:"userDetails"}},{$match:{doc_id:data[0].id}}],
+        modelappointment.aggregate([{$lookup: {from:"users",localField:"pat_id",foreignField:"email",as:"userDetails"}},{$match:{doc_id:data[0].id}}],
           // modelappointment.find({doc_id},  
         function(err,data) {  
           if (err) {  
@@ -395,7 +397,7 @@ app.post("/api/registeruser",async(req,res)=>{
       }
       else{
         console.log("pat_id: ",data[0].id);
-        modelappointment.aggregate([{$lookup: {from:"users",localField:"doc_id",foreignField:"_id",as:"userDetails"}},{$match:{pat_id:data[0].id}}],
+        modelappointment.aggregate([{$lookup: {from:"users",localField:"doc_id",foreignField:"email",as:"userDetails"}},{$match:{pat_id:data[0].email}}],
           // modelappointment.find({doc_id},  
         function(err,data) {  
           if (err) {  
